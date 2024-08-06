@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: hanan_postgresC
+    environment:
+      POSTGRES_USER: hanan
+      POSTGRES_PASSWORD: 1234hanan
+      POSTGRES_DB: h_database
+    volumes:
+      - my_postgres_data:/var/lib/postgresql/data
+    networks:
+      - hanan_network
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: my-go-backendd
+    environment:
+      POSTGRES_USER: hanan
+      POSTGRES_PASSWORD: 1234hanan
+      POSTGRES_DB: h_database
+      POSTGRES_HOST: hanan_postgresC
+      POSTGRES_PORT: 5432
+    networks:
+      - hanan_network
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: my-html-frontend
+    networks:
+      - hanan_network
+    ports:
+      - "80:80"
+
+networks:
+  hanan_network:
+    driver: bridge
+
+volumes:
+  my_postgres_data:
+
